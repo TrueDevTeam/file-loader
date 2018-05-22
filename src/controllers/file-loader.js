@@ -2,12 +2,15 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const config = require('config');
 const uuid = require('uuid/v4');
+const fileType = require('file-type');
 
 const {
   BAD_REQUEST_CODE,
   NOT_FOUND_CODE,
   INTERNAL_ERROR_CODE,
-  NO_PATH_ERROR
+  NO_PATH_ERROR,
+  WRONG_EXTENSION,
+  allowedImageExtensions
 } = require('../constants/constants');
 const logger = require('../utils/logger');
 
@@ -17,14 +20,23 @@ if(!basePath) {
   throw new Error(NO_PATH_ERROR);
 }
 
-//todo file-type
 const loadFile = async (request, response) => {
   if (!request.body || !request.body.image) {
     return response.status(BAD_REQUEST_CODE).send();
   }
   const base64Image = request.body.image;
   const buffer = Buffer.from(base64Image, 'base64');
-  const fileName = `${uuid()}.png`;
+  const extension = fileType(buffer).ext;
+  if (!allowedImageExtensions.includes(extension)) {
+    logger.log({
+      level: 'error',
+      message: `${WRONG_EXTENSION}: ${extension}`
+    });
+    return response.status(BAD_REQUEST_CODE).json({
+      message: WRONG_EXTENSION
+    });
+  }
+  const fileName = `${uuid()}.${extension}`;
   const absolutePath = `${basePath}/${fileName}`;
   try {
     await fs.writeFileAsync(absolutePath, buffer);

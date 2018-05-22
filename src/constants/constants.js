@@ -6,6 +6,13 @@ const INTERNAL_ERROR_CODE = 500;
 const AUTHORIZATION_HEADER = 'authorization';
 
 const NO_PATH_ERROR = 'No path specified';
+const WRONG_EXTENSION = 'Wrong file extension';
+
+const allowedImageExtensions = [
+  'jpg',
+  'png',
+  'bmp'
+];
 
 module.exports = {
   SUCCESS_STATUS_CODE,
@@ -14,5 +21,7 @@ module.exports = {
   NOT_FOUND_CODE,
   INTERNAL_ERROR_CODE,
   AUTHORIZATION_HEADER,
-  NO_PATH_ERROR
+  NO_PATH_ERROR,
+  WRONG_EXTENSION,
+  allowedImageExtensions
 };
