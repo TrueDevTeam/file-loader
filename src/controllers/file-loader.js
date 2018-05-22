@@ -29,8 +29,10 @@ const loadFile = async (request, response) => {
   try {
     await fs.writeFileAsync(absolutePath, buffer);
   } catch (error) {
-    logger.log(error);
-    logger.log(1);
+    logger.log({
+      level: 'error',
+      message: error.message
+    });
     return response.status(INTERNAL_ERROR_CODE).send();
   }
   const result = {
