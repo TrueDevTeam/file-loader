@@ -5,6 +5,7 @@ const uuid = require('uuid/v4');
 
 const {
   BAD_REQUEST_CODE,
+  NOT_FOUND_CODE,
   INTERNAL_ERROR_CODE,
   NO_PATH_ERROR
 } = require('../constants/constants');
@@ -16,7 +17,6 @@ if(!basePath) {
   throw new Error(NO_PATH_ERROR);
 }
 
-//TODO get image endpoint
 //todo file-type
 const loadFile = async (request, response) => {
   if (!request.body || !request.body.image) {
@@ -39,10 +39,23 @@ const loadFile = async (request, response) => {
     href: `/${fileName}`
   }
   return response.json(result);
-}
+};
+
+const getFile = async (request, response) => {
+  const { fileName } = request.params;
+  if (!fileName) {
+    return response.status(BAD_REQUEST_CODE).send();
+  }
+  const absolutePath = `${basePath}/${fileName}`;
+  if (!fs.existsSync(absolutePath)) {
+    return response.status(NOT_FOUND_CODE).send();
+  }
+  return response.sendFile(absolutePath);
+};
 
 module.exports = {
-  loadFile
+  loadFile,
+  getFile
 };
 
 
